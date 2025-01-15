@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HSAPSS Windsor</title>
+  <title>Student Management</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
   <div class="container">
-    <h1 class="text-center my-4">HSAPSS Windsor</h1>
+    <h1 class="text-center my-4">📋 Student Management</h1>
 
     <!-- Add Student Form -->
     <div id="addStudentForm">
-      <h2>Add New Yuvak</h2>
+      <h2>Add New Student</h2>
       <form method="POST" action="/students">
         <div class="row">
           <div class="col-md-6 mb-3">
@@ -31,7 +31,7 @@
             <textarea class="form-control" name="address" placeholder="Address"></textarea>
           </div>
           <div class="col-12">
-            <button type="submit" class="btn btn-success">Add Yuvak</button>
+            <button type="submit" class="btn btn-success">Add Student</button>
           </div>
         </div>
       </form>
@@ -41,7 +41,7 @@
 
     <!-- Student List -->
     <div id="studentList">
-      <h2>Yuvak List</h2>
+      <h2>Student List</h2>
       <div id="studentsContainer" class="row"></div>
     </div>
 
@@ -50,7 +50,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Edit Yuvak</h5>
+            <h5 class="modal-title">Edit Student</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <form id="editStudentForm">
@@ -91,52 +91,51 @@
   <script>
     // Fetch and display students
     async function fetchStudents() {
-  try {
-    const response = await fetch('/students'); // Sends GET request to back-end
-    if (!response.ok) {
-      throw new Error('Failed to fetch students');
-    }
+      try {
+        const response = await fetch('/students');
+        if (!response.ok) {
+          throw new Error(`Failed to fetch students. Status: ${response.status}`);
+        }
 
-    const students = await response.json(); // Parse JSON response
-    const studentsContainer = document.getElementById('studentsContainer');
-    studentsContainer.innerHTML = ''; // Clear previous content
+        const students = await response.json();
+        const studentsContainer = document.getElementById('studentsContainer');
+        studentsContainer.innerHTML = ''; // Clear previous content
 
-    if (students.length === 0) {
-      studentsContainer.innerHTML = '<p class="text-muted">No students found.</p>';
-      return;
-    }
+        if (students.length === 0) {
+          studentsContainer.innerHTML = '<p class="text-muted">No students found.</p>';
+          return;
+        }
 
-    students.forEach((student) => {
-      const studentCard = `
-        <div class="col-md-4 mb-3">
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <h5 class="card-title">${student.first_name} ${student.last_name}</h5>
-              <p class="card-text">
-                <strong>Email:</strong> ${student.mail_id}<br>
-                <strong>Phone:</strong> ${student.phone}<br>
-                <strong>Address:</strong> ${student.address || 'N/A'}
-              </p>
-              <div class="d-flex justify-content-between">
-                <button class="btn btn-warning btn-sm" onclick="showEditModal(${student.student_index}, '${student.first_name}', '${student.last_name}', '${student.mail_id}', '${student.phone}', '${student.address}')">Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.student_index})">Delete</button>
+        students.forEach((student) => {
+          const studentCard = `
+            <div class="col-md-4 mb-3">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title">${student.first_name} ${student.last_name}</h5>
+                  <p class="card-text">
+                    <strong>Email:</strong> ${student.mail_id}<br>
+                    <strong>Phone:</strong> ${student.phone}<br>
+                    <strong>Address:</strong> ${student.address || 'N/A'}
+                  </p>
+                  <div class="d-flex justify-content-between">
+                    <button class="btn btn-warning btn-sm" onclick="showEditModal(${student.student_index}, '${student.first_name}', '${student.last_name}', '${student.mail_id}', '${student.phone}', '${student.address}')">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.student_index})">Delete</button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      `;
-      studentsContainer.innerHTML += studentCard;
-    });
-  } catch (error) {
-    console.error(error.message);
-    const studentsContainer = document.getElementById('studentsContainer');
-    studentsContainer.innerHTML = '<p class="text-danger">Failed to load student list. Please try again later.</p>';
-  }
-}
+          `;
+          studentsContainer.innerHTML += studentCard;
+        });
+      } catch (error) {
+        console.error('Fetch error:', error);
+        const studentsContainer = document.getElementById('studentsContainer');
+        studentsContainer.innerHTML = '<p class="text-danger">Failed to load student list. Please try again later.</p>';
+      }
+    }
 
-// Call fetchStudents on page load
-fetchStudents();
-
+    // Call fetchStudents on page load
+    fetchStudents();
 
     // Show Edit Modal
     function showEditModal(student_index, first_name, last_name, mail_id, phone, address) {
