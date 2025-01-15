@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { addStudent, getStudents, updateStudent, deleteStudent } = require('../models/studentModel');
+const { addStudent, getStudents, updateStudent, deleteStudent } = require('../models/StudentModel');
 
 // Route to add a new student
 router.post('/students', addStudent);
