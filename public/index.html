@@ -15,10 +15,16 @@
       color: #343a40;
       font-weight: bold;
     }
-    .table-responsive {
-      overflow-x: auto;
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
     }
-    .form-control, .btn {
+    .card-body h5 {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+    .btn {
       min-height: 40px;
     }
     @media (max-width: 768px) {
@@ -62,31 +68,8 @@
       </div>
     </div>
 
-    <!-- Students Table -->
-    <div class="card shadow">
-      <div class="card-header bg-dark text-white">
-        <h5 class="mb-0">Yuvak List</h5>
-      </div>
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-striped mb-0">
-            <thead class="table-dark">
-              <tr>
-                <th>ID</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>Call Made</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="studentsTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <!-- Students List (Card Structure) -->
+    <div class="row g-4" id="studentsContainer"></div>
   </div>
 
   <!-- Edit Student Modal -->
@@ -135,28 +118,32 @@
     async function fetchStudents() {
       const response = await fetch('/students');
       const students = await response.json();
-      const tableBody = document.getElementById('studentsTable');
-      tableBody.innerHTML = '';
+      const container = document.getElementById('studentsContainer');
+      container.innerHTML = '';
 
       students.forEach(student => {
-        const row = `
-          <tr>
-            <td>${student.student_index}</td>
-            <td>${student.first_name}</td>
-            <td>${student.last_name}</td>
-            <td>${student.mail_id}</td>
-            <td><a href="tel:${student.phone}" class="text-primary">${student.phone}</a></td>
-            <td>${student.address}</td>
-            <td>
-              <input type="checkbox" onchange="markCallMade(${student.student_index})">
-            </td>
-            <td>
-              <button class="btn btn-warning btn-sm" onclick="showEditModal(${student.student_index}, '${student.first_name}', '${student.last_name}', '${student.mail_id}', '${student.phone}', '${student.address}')">Edit</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.student_index})">Delete</button>
-            </td>
-          </tr>
+        const card = `
+          <div class="col-md-4">
+            <div class="card shadow">
+              <div class="card-body">
+                <h5>${student.first_name} ${student.last_name}</h5>
+                <p><strong>Email:</strong> ${student.mail_id}</p>
+                <p><strong>Phone:</strong> <a href="tel:${student.phone}" class="text-primary">${student.phone}</a></p>
+                <p><strong>Address:</strong> ${student.address || 'N/A'}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" onchange="markCallMade(${student.student_index})"> Call Made
+                  </label>
+                  <div>
+                    <button class="btn btn-warning btn-sm" onclick="showEditModal(${student.student_index}, '${student.first_name}', '${student.last_name}', '${student.mail_id}', '${student.phone}', '${student.address}')">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.student_index})">Delete</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         `;
-        tableBody.innerHTML += row;
+        container.innerHTML += card;
       });
     }
 
