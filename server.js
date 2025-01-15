@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const studentRoutes = require('./routes/StudentRoutes');
 require('dotenv').config();

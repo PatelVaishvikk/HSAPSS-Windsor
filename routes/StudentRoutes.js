@@ -3,7 +3,7 @@ const router = express.Router();
 const { addStudent, updateStudent, deleteStudent, getStudents } = require('../models/StudentModel');
 
 // Add a student
-router.post('/', async (req, res) => {
+router.post('/students', async (req, res) => {
   try {
     await addStudent(req.body);
     res.redirect('/');
@@ -13,9 +13,9 @@ router.post('/', async (req, res) => {
 });
 
 // Update a student
-router.put('/:id', async (req, res) => {
+router.put('/:student_index', async (req, res) => {
   try {
-    await updateStudent(req.params.id, req.body);
+    await updateStudent(req.params.student_index, req.body);
     res.status(200).json({ message: 'Student updated successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -23,9 +23,9 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a student
-router.delete('/:id', async (req, res) => {
+router.delete('/:student_index', async (req, res) => {
   try {
-    await deleteStudent(req.params.id);
+    await deleteStudent(req.params.student_index);
     res.status(200).json({ message: 'Student deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -33,7 +33,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Get all students
-router.get('/', async (req, res) => {
+router.get('/students', async (req, res) => {
   try {
     const result = await getStudents();
     res.json(result.rows);
