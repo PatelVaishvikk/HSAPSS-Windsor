@@ -27,26 +27,18 @@
     .btn {
       min-height: 40px;
     }
-    .loader {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 1000;
-      color: #343a40;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    .overlay {
-      display: none;
+    #loader {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       background-color: rgba(255, 255, 255, 0.8);
-      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      display: none;
     }
     @media (max-width: 768px) {
       h1 {
@@ -55,12 +47,12 @@
       }
     }
   </style>
-  
 </head>
 <body>
-  <div class="overlay" id="overlay"></div>
-  <div class="loader" id="loader">
-    Swaminarayan Swaminarayan
+  <div id="loader">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
   </div>
 
   <div class="container">
@@ -143,47 +135,50 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     function showLoader() {
-      document.getElementById('overlay').style.display = 'block';
-      document.getElementById('loader').style.display = 'block';
+      document.getElementById('loader').style.display = 'flex';
     }
 
     function hideLoader() {
-      document.getElementById('overlay').style.display = 'none';
       document.getElementById('loader').style.display = 'none';
     }
 
     async function fetchStudents() {
       showLoader();
-      const response = await fetch('/students');
-      const students = await response.json();
-      const container = document.getElementById('studentsContainer');
-      container.innerHTML = '';
+      try {
+        const response = await fetch('/students');
+        const students = await response.json();
+        const container = document.getElementById('studentsContainer');
+        container.innerHTML = '';
 
-      students.forEach(student => {
-        const card = `
-          <div class="col-md-4">
-            <div class="card shadow">
-              <div class="card-body">
-                <h5>${student.first_name} ${student.last_name}</h5>
-                <p><strong>Email:</strong> ${student.mail_id}</p>
-                <p><strong>Phone:</strong> <a href="tel:${student.phone}" class="text-primary">${student.phone}</a></p>
-                <p><strong>Address:</strong> ${student.address || 'N/A'}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <label class="form-check-label">
-                    <input type="checkbox" class="form-check-input" onchange="markCallMade(${student.student_index})"> Call Made
-                  </label>
-                  <div>
-                    <button class="btn btn-warning btn-sm" onclick="showEditModal(${student.student_index}, '${student.first_name}', '${student.last_name}', '${student.mail_id}', '${student.phone}', '${student.address}')">Edit</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.student_index})">Delete</button>
+        students.forEach(student => {
+          const card = `
+            <div class="col-md-4">
+              <div class="card shadow">
+                <div class="card-body">
+                  <h5>${student.first_name} ${student.last_name}</h5>
+                  <p><strong>Email:</strong> ${student.mail_id}</p>
+                  <p><strong>Phone:</strong> <a href="tel:${student.phone}" class="text-primary">${student.phone}</a></p>
+                  <p><strong>Address:</strong> ${student.address || 'N/A'}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input" onchange="markCallMade(${student.student_index})"> Call Made
+                    </label>
+                    <div>
+                      <button class="btn btn-warning btn-sm" onclick="showEditModal(${student.student_index}, '${student.first_name}', '${student.last_name}', '${student.mail_id}', '${student.phone}', '${student.address}')">Edit</button>
+                      <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.student_index})">Delete</button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        `;
-        container.innerHTML += card;
-      });
-      hideLoader();
+          `;
+          container.innerHTML += card;
+        });
+      } catch (error) {
+        console.error(error);
+      } finally {
+        hideLoader();
+      }
     }
 
     async function deleteStudent(id) {
