@@ -22,9 +22,13 @@
 // });
 
 const express = require('express');
+const path = require('path');
 const studentRoutes = require('./routes/StudentRoutes');
 
 const app = express();
+
+// Serve static files for npm packages
+app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
 // Middleware
 app.use(express.json());
