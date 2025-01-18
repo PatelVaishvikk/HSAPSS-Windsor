@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Table - HSAPSS Windsor</title>
+    <!-- Include your existing CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <style>
+        /* Modern UI Styles */
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #6366f1;
+            --accent-color: #818cf8;
+        }
+
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 60px; /* Add padding for fixed navbar */
+        }
+
+        /* Enhanced Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #fff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 0.8rem 1.2rem;
+            margin: 0 0.3rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+        }
+
+        /* Table Enhancements */
+        .card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        /* Action Buttons */
+        .btn-group .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin: 0 0.2rem;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        /* Animation */
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8fafc;
+            transform: scale(1.01);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Modal enhancements */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            color: white;
+            border: none;
+            padding: 1.5rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            padding: 0.8rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-phone-square-alt me-2"></i>HSAPSS Windsor
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/add-yuvak">
+                            <i class="fas fa-user-plus me-1"></i>Add New Yuvak
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/api/students-table">
+                            <i class="fas fa-table me-1"></i>Students Table
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api/call-logs-table">
+                            <i class="fas fa-phone me-1"></i>Call Logs
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 100px;">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Students Table</h5>
+            </div>
+            <div class="card-body">
+                <table id="studentsTable" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th class="student-info-column">Student Info</th>
+                            <th class="contact-column">Contact</th>
+                            <th class="actions-column">Actions</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this modal for editing -->
+    <div class="modal fade" id="editStudentModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Student</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editStudentForm">
+                        <input type="hidden" id="editStudentId">
+                        <div class="mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="editFirstName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="editLastName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editMailId" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="editPhone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <input type="text" class="form-control" id="editAddress">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this modal for logging calls -->
+    <div class="modal fade" id="newCallModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-phone me-2"></i>Log Call for <span id="selected_student_name"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newCallForm" onsubmit="event.preventDefault(); saveCallLog();">
+                        <input type="hidden" id="student_id">
+                        <div class="mb-3">
+                            <label class="form-label">Status <span class="text-danger">*</span></label>
+                            <select class="form-select" id="status" required>
+                                <option value="">Select Status</option>
+                                <option value="completed">Completed</option>
+                                <option value="no-answer">No Answer</option>
+                                <option value="voicemail">Voicemail</option>
+                                <option value="wrong-number">Wrong Number</option>
+                                <option value="disconnected">Disconnected</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" id="notes" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="needs_follow_up">
+                                <label class="form-check-label" for="needs_follow_up">Needs Follow-up</label>
+                            </div>
+                        </div>
+                        <div class="mb-3" id="follow_up_date_container" style="display: none;">
+                            <label class="form-label">Follow-up Date</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-calendar"></i>
+                                </span>
+                                <input type="date" class="form-control" id="follow_up_date" 
+                                       min="${new Date().toISOString().split('T')[0]}"
+                                       required>
+                            </div>
+                            <div class="form-text text-muted">
+                                Select the date for follow-up
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="newCallForm" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Call Log
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include your scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            const table = $('#studentsTable').DataTable({
+                ajax: {
+                    url: '/api/students',
+                    dataSrc: ''
+                },
+                columns: [
+                    { 
+                        data: null,
+                        className: 'student-info-column',
+                        render: function(data) {
+                            return `
+                                <div class="student-info">
+                                    <div class="student-name">
+                                        ${data.first_name} ${data.last_name}
+                                    </div>
+                                    <div class="student-id text-muted">
+                                        ID: ${data.student_index}
+                                    </div>
+                                    <div class="student-address text-muted">
+                                        <i class="fas fa-map-marker-alt"></i> ${data.address || 'No address'}
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    },
+                    { 
+                        data: null,
+                        className: 'contact-column',
+                        render: function(data) {
+                            return `
+                                <div class="contact-info">
+                                    <div class="phone">
+                                        <i class="fas fa-phone"></i>
+                                        <a href="tel:${data.phone}">${data.phone}</a>
+                                    </div>
+                                    <div class="email">
+                                        <i class="fas fa-envelope"></i>
+                                        <a href="mailto:${data.mail_id}">${data.mail_id}</a>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    },
+                    {
+                        data: null,
+                        className: 'actions-column',
+                        orderable: false,
+                        render: function(data) {
+                            return `
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-primary" onclick="editStudent(${data.student_index})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-info" onclick="logCall(${data.student_index}, '${data.first_name} ${data.last_name}')">
+                                        <i class="fas fa-phone"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteStudent(${data.student_index})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    }
+                ],
+                order: [[0, 'asc']],
+                responsive: true,
+                autoWidth: false,
+                pageLength: 10,
+                dom: '<"row"<"col-12"f>>' +
+                     '<"row"<"col-12"tr>>' +
+                     '<"row"<"col-12"p>>',
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search students..."
+                }
+            });
+
+            // Add this function
+            window.logCall = function(studentId, studentName) {
+                // Pre-select the student in the call log modal
+                document.getElementById('student_id').value = studentId;
+                document.getElementById('selected_student_name').textContent = studentName;
+                const modal = new bootstrap.Modal(document.getElementById('newCallModal'));
+                modal.show();
+            }
+        });
+
+        // Add these functions after your DataTable initialization
+        function editStudent(id) {
+            fetch(`/api/students/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch student data');
+                    }
+                    return response.json();
+                })
+                .then(student => {
+                    document.getElementById('editStudentId').value = student.student_index;
+                    document.getElementById('editFirstName').value = student.first_name;
+                    document.getElementById('editLastName').value = student.last_name;
+                    document.getElementById('editMailId').value = student.mail_id;
+                    document.getElementById('editPhone').value = student.phone;
+                    document.getElementById('editAddress').value = student.address || '';
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('editStudentModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to load student data');
+                });
+        }
+
+        function deleteStudent(id) {
+            if (confirm('Are you sure you want to delete this student?')) {
+                fetch(`/api/students/${id}`, {
+                    method: 'DELETE',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Refresh the table
+                        $('#studentsTable').DataTable().ajax.reload();
+                    } else {
+                        alert('Failed to delete student');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // Add refresh functionality
+        function refreshTable() {
+            $('#studentsTable').DataTable().ajax.reload();
+        }
+
+        // Refresh table every 30 seconds
+        setInterval(refreshTable, 30000);
+
+        // Add the saveEdit function
+        function saveEdit() {
+            const id = document.getElementById('editStudentId').value;
+            const data = {
+                first_name: document.getElementById('editFirstName').value,
+                last_name: document.getElementById('editLastName').value,
+                mail_id: document.getElementById('editMailId').value,
+                phone: document.getElementById('editPhone').value,
+                address: document.getElementById('editAddress').value
+            };
+
+            fetch(`/api/students/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update student');
+                }
+                return response.json();
+            })
+            .then(result => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editStudentModal'));
+                modal.hide();
+                $('#studentsTable').DataTable().ajax.reload();
+                alert('Student updated successfully');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to update student');
+            });
+        }
+
+        // Add event listener for follow-up checkbox
+        document.addEventListener('DOMContentLoaded', function() {
+            const followUpCheckbox = document.getElementById('needs_follow_up');
+            const followUpDateContainer = document.getElementById('follow_up_date_container');
+            
+            followUpCheckbox.addEventListener('change', function() {
+                followUpDateContainer.style.display = this.checked ? 'block' : 'none';
+                if (this.checked) {
+                    // Set default date to tomorrow
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    document.getElementById('follow_up_date').value = tomorrow.toISOString().split('T')[0];
+                }
+            });
+        });
+
+        // Add the saveCallLog function
+        async function saveCallLog() {
+            try {
+                // Get form data
+                const formData = {
+                    student_id: parseInt(document.getElementById('student_id').value),
+                    status: document.getElementById('status').value,
+                    notes: document.getElementById('notes').value,
+                    needs_follow_up: document.getElementById('needs_follow_up').checked,
+                    follow_up_date: document.getElementById('needs_follow_up').checked ? 
+                        document.getElementById('follow_up_date').value : null
+                };
+
+                console.log('Sending data:', formData); // Debug log
+
+                // Send API request
+                const response = await fetch('/api/call-logs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to save call log');
+                }
+
+                const result = await response.json();
+                console.log('Save result:', result); // Debug log
+
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('newCallModal'));
+                modal.hide();
+
+                // Show success message
+                showToast('Success', 'Call log saved successfully', 'success');
+
+                // Reset form
+                document.getElementById('newCallForm').reset();
+                document.getElementById('follow_up_date_container').style.display = 'none';
+
+            } catch (error) {
+                console.error('Error saving call log:', error);
+                showToast('Error', error.message, 'danger');
+            }
+        }
+
+        // Add toast notification function if not already present
+        function showToast(title, message, type = 'success') {
+            const toastHTML = `
+                <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                    <div class="toast align-items-center text-white bg-${type} border-0" role="alert">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <strong>${title}</strong><br>
+                                ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', toastHTML);
+            const toastElement = document.querySelector('.toast:last-child');
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+            
+            setTimeout(() => {
+                toastElement.remove();
+            }, 5000);
+        }
+
+        document.getElementById('needs_follow_up').addEventListener('change', function() {
+            const container = document.getElementById('follow_up_date_container');
+            if (this.checked) {
+                container.style.display = 'block';
+                // Use setTimeout to trigger the animation after display is set
+                setTimeout(() => container.classList.add('show'), 10);
+                
+                // Set default date to tomorrow
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                document.getElementById('follow_up_date').value = tomorrow.toISOString().split('T')[0];
+            } else {
+                container.classList.remove('show');
+                // Hide after animation completes
+                setTimeout(() => container.style.display = 'none', 300);
+            }
+        });
+
+        function validateCallLogForm() {
+            const studentId = document.getElementById('student_id').value;
+            const status = document.getElementById('status').value;
+            
+            if (!studentId || !status) {
+                showToast('Error', 'Please fill in all required fields', 'danger');
+                return false;
+            }
+
+            if (document.getElementById('needs_follow_up').checked) {
+                const followUpDate = document.getElementById('follow_up_date').value;
+                if (!followUpDate) {
+                    showToast('Error', 'Please select a follow-up date', 'danger');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html> 

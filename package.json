@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,11 +17,14 @@
     "datatables.net-bs5": "^2.2.1",
     "datatables.net-dt": "^2.2.1",
     "datatables.net-responsive-bs5": "^3.0.3",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.0.3",
     "ejs": "^3.1.10",
-    "express": "^4.21.2",
+    "express": "^4.18.2",
     "jquery": "^3.7.1",
-    "nodemon": "^3.1.9",
-    "pg": "^8.13.1"
+    "nodemon": "^2.0.22",
+    "pg": "^8.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }

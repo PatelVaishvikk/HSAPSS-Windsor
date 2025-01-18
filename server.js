@@ -1,45 +1,33 @@
-// const path = require('path');
-// const express = require('express');
-// const studentRoutes = require('./routes/StudentRoutes');
-// require('dotenv').config();
+const app = require('./app');
+const { testConnection } = require('./config/db');
 
-// const app = express();
+const PORT = process.env.PORT || 3000;
 
-// // Middleware
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-// app.use(express.static('public'));
-// app.get('/', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'public', 'index.html'));
-//   });
-// // Routes
-// app.use('/', studentRoutes);
+// Ensure database connection before starting server
+async function startServer() {
+    try {
+        // Test database connection
+        const isConnected = await testConnection();
+        if (!isConnected) {
+            console.error('Cannot start server: Database connection failed');
+            process.exit(1);
+        }
 
-// // Start the server
-// const PORT = process.env.PORT | 3000;
-// app.listen(PORT, () => {
-//   console.log(`Server running on http://localhost:${PORT}`);
-// });
+        // Start server
+        app.listen(PORT, () => {
+            console.log(`✅ Server running on port ${PORT}`);
+            console.log(`📊 Database connected successfully`);
+        });
+    } catch (err) {
+        console.error('Failed to start server:', err);
+        process.exit(1);
+    }
+}
 
-const express = require('express');
-const path = require('path');
-const studentRoutes = require('./routes/StudentRoutes');
+startServer();
 
-const app = express();
-
-// Serve static files for npm packages
-app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
-
-// Routes
-app.use('/', studentRoutes);
-
-// Start the server
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+    console.error('Unhandled Promise Rejection:', err);
+    process.exit(1);
 });
