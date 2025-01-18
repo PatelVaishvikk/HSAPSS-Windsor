@@ -28,6 +28,9 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
   />
 
+  <!-- Chart.js (Added for Chart.js status breakdown) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     :root {
       --primary-color: #5d5bf0;
@@ -429,6 +432,19 @@
       </div>
     </div>
 
+    <!-- Added for Chart.js status breakdown -->
+    <div class="card mb-4 shadow animate-fade-in" id="callStatusCard">
+      <div class="card-header">
+        <h5 class="mb-0">
+          <i class="fas fa-chart-pie me-2"></i>Call Status Distribution
+        </h5>
+      </div>
+      <div class="card-body">
+        <canvas id="callStatusChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+    <!-- End Chart.js status breakdown card -->
+
     <!-- Students Table -->
     <div class="table-responsive">
       <table
@@ -665,6 +681,7 @@
 
   <script>
     let dataTable;
+    let callStatusChart; // Reference to our Chart.js instance
 
     // Unified call log storage object
     const callHistory = {
@@ -684,6 +701,7 @@
         this.logs[studentId].unshift(newLog);
         this.saveToStorage();
         this.updateStats();
+        updateStatusChart(); // <--- Update the chart whenever a new call is logged
         return newLog;
       },
       getLogsForStudent(studentId) {
@@ -762,7 +780,78 @@
       dataTable.on('draw', function() {
         $('.dataTable tbody tr').addClass('animate-fade-in');
       });
+
+      // Initialize Chart.js after the page loads
+      initStatusChart();
+      // Immediately update chart based on any existing localStorage data
+      updateStatusChart();
     });
+
+    // Initialize the Chart.js doughnut chart
+    function initStatusChart() {
+      const ctx = document.getElementById('callStatusChart').getContext('2d');
+      callStatusChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Completed','No Answer','Voicemail','Wrong Number','Disconnected'],
+          datasets: [{
+            label: 'Call Status',
+            data: [0, 0, 0, 0, 0],
+            backgroundColor: [
+              '#22c55e', // completed
+              '#f59e0b', // no-answer
+              '#3b82f6', // voicemail
+              '#ef4444', // wrong-number
+              '#6b7280'  // disconnected
+            ],
+            hoverOffset: 10
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+
+    // Tally up the statuses from our callHistory.logs
+    function updateStatusChart() {
+      if (!callStatusChart) return;
+
+      // Tally each status
+      const statusCount = {
+        completed: 0,
+        'no-answer': 0,
+        voicemail: 0,
+        'wrong-number': 0,
+        disconnected: 0
+      };
+
+      // Loop over each student's logs and increment counts
+      Object.values(callHistory.logs).forEach(logs => {
+        logs.forEach(item => {
+          if (statusCount[item.status] !== undefined) {
+            statusCount[item.status]++;
+          }
+        });
+      });
+
+      // Match these to the dataset order: completed, no-answer, voicemail, wrong-number, disconnected
+      const newData = [
+        statusCount['completed'],
+        statusCount['no-answer'],
+        statusCount['voicemail'],
+        statusCount['wrong-number'],
+        statusCount['disconnected']
+      ];
+
+      // Update chart dataset
+      callStatusChart.data.datasets[0].data = newData;
+      callStatusChart.update();
+    }
 
     // Fetch students from /students
     async function fetchStudents() {
@@ -805,6 +894,7 @@
 
         dataTable.draw();
         callHistory.updateStats();
+        updateStatusChart(); // Re-draw chart in case data changed
       } catch (error) {
         console.error('Error fetching students:', error);
       }
