@@ -1,19 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const { addStudent, getStudents, updateStudent, deleteStudent } = require('../models/StudentModel');
+const {
+  addStudent,
+  getStudents,
+  updateStudent,
+  deleteStudent,
+  logCallsStudent,
+  getCallLogs,
+  getCallLogsLetest,
+} = require('../models/StudentModel');
 
-// Route to add a new student
-router.post('/students', addStudent);
+// Routes for Students
+router.post('/students', addStudent); // Add a new student
+router.get('/students', getStudents); // Get all students
+router.put('/students/edit/:id', updateStudent); // Edit/update a student
+router.delete('/students/:id', deleteStudent); // Delete a student
 
-// Route to get all students
-router.get('/students', getStudents);
-
-// Route to edit/update a student's information
-router.put('/students/edit/:id', updateStudent);
-
-// Route to delete a student
-router.delete('/students/delete/:id', deleteStudent);
-
-
+// Routes for Call Logs
+router.post('/api/call-logs', logCallsStudent); // Log a call
+router.get('/api/call-logs/:studentId', getCallLogs); // Get call history for a student
+router.get('/api/call-logs/status/latest', getCallLogsLetest); // Get the latest call status for all students
 
 module.exports = router;
