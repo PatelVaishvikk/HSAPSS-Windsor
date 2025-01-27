@@ -1,5 +1,9 @@
 # Student Management System
 
+## **Screenshots of HSAPSS Windsor Web App**
+![WebAPP Screenshot](WEB.png)
+
+
 A comprehensive web application for managing student records, attendance, and call logs built with Node.js and Express.js.
 
 ## Features
