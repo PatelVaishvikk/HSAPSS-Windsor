@@ -3,6 +3,12 @@
 ## **Screenshots of HSAPSS Windsor Web App**
 ![WebAPP Screenshot](WEB.png)
 
+![WebAPP Screenshot](WEB1.png)
+
+![WebAPP Screenshot](WEB2.png)
+
+![WebAPP Screenshot](WEB3.png)
+
 
 A comprehensive web application for managing student records, attendance, and call logs built with Node.js and Express.js.
 
